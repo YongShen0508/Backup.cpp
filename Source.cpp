@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <stdlib.h>
 #include <cmath>
@@ -38,7 +38,7 @@ void ModifyMovie(int&);
 void DeleteMovie(int&);
 void MoviePrinting(int&,int);
 bool MovieStartDetection(string);
-void MovieEndDetection(string,int,double,int&,int&);
+void MovieEndDetection(string,int,double,int&,int&,int);
 void MovieRecordIntoStruct(string, string, string, string, double, int,int&);
 //employee function
 void EmployeeManagement(int);
@@ -58,6 +58,9 @@ void DateRecord(int, int, int, int, int, int, int&);
 void BookSeatPrinting(int, int, int);
 //refresh the cinema hall
 void CinemaRefresh(int);
+
+void OpenMemberDetails(int& nomember);
+void ReadTextRecord(int);
 //structure declaration
 struct mapping_seats
 {//cinema hall	//a set of column and row = 1 data
@@ -85,56 +88,33 @@ struct employee {
 	int password;
 }employee[100];
 string department[5] = { "INFORMATION TECHNOLOGY","HUMAN RESOURCES","FINANCE","MARKETING","BUSINESS" };
-
+string text[20][7];
 //Main Menu
 int main()
 {
+	system("chcp 65001");
 	bool decision = true;
-	string input;
-	int selection;
+	string selection;
 	do{
 		system("cls");
 		Main_Menu("MAIN");
 		cout << "\t\t\tPlease input your selection >>> ";
-		getline(cin, input);
-		selection=stoi (input);
-		switch (selection)
-		{
-		case(1)://Movie details
-		{
-			MovieDetails(selection);
-			break;
-		}
-		case(2)://f&b
-		{
-			break;
-		}
-		case(3)://purchase now
-		{
-			PurchaseNow(selection);
-			break;
-		}
-		case(4)://membership details
-		{
-			break;
-		}
-		case(5)://administrator menu
-		{
+		getline(cin,selection);
+		if (selection == "1")//Movie details
+			MovieDetails(1);
+		else if (selection == "2")//f&b
+			cout << "HELLO" << endl;
+		else if(selection=="3")//purchase now
+			PurchaseNow(3);
+		else if(selection=="4")//membership details
+			cout << "HELLO" << endl;
+		else if(selection=="5")
 			AdministratorMenu(5);
-			break;
-		}
-		case(6)://exit
-		{
+		else if(selection=="7")//exit
 			decision = false;
-			break;
-		}
-		default://reinput
-		{
+		else
 			cout << "\t\t\tInvalid input found" << endl;
-
-			break;
-		}
-		}
+		cin.clear();
 	} while (decision);
 
 
@@ -155,6 +135,7 @@ void AdministratorMenu(int option)
 	bool decision = true, access = true;
 	string id;
 	do{
+		cin.clear();
 		system("cls");
 		int record = 0,password,found=0;
 		ReadEmployeeRecord(record);
@@ -163,7 +144,10 @@ void AdministratorMenu(int option)
 		cin >> id;
 		id = upper(id);
 		if (id == "E")
+		{
+			decision = false;
 			break;
+		}
 		cout << "\t\t\tPlease input your password >>>";
 		cin >> password;
 		if(id.length()==5)
@@ -180,7 +164,7 @@ void AdministratorMenu(int option)
 				}
 			}
 		}
-		if (found == 0 || !(id.length() == 5))
+		if (found == 0 || id.length()!=5)
 		{
 			cout << "\t\t\tPlease reinput your id and password " << endl;
 			Sleep(1000);
@@ -188,7 +172,8 @@ void AdministratorMenu(int option)
 		else if(found==5)
 			access = false;
 	} while (access);
-	while(decision&&!(id=="E"))
+
+	while(decision)
 	{	
 		int selection;
 		system("cls");
@@ -247,7 +232,7 @@ void CinemaManagement(int option)
 	do
 	{	
 		cout << "\n\n\n\t\t\t<1> Movies management " << endl;
-		cout << "\t\t\t<2> Cinema Hall modification " << endl;
+		cout << "\t\t\t<2> Cinema Hall management " << endl;
 		cout << "\t\t\t<3> Exit " << endl;
 		cout << "\t\t\tPlease input your selection >>> ";
 		cin >> selection;
@@ -280,7 +265,7 @@ void CinemaManagement(int option)
 //Cinema Hall Page
 void CinemaHallManagement(int option)
 {
-	int selection;
+	string selection;
 	bool decision = true;
 	do
 	{
@@ -294,18 +279,16 @@ void CinemaHallManagement(int option)
 			cout << "\n\n\t\t\t\t HALL " << unavailable[w].hall << "\n\n";
 			CinemaSeatPrinting(w,99);
 		}
-
+		cin.ignore();
 		cout << string(100, char(61)) << "\n\n\n";
 		cout << "\t\t\t<1> Add Cinema Hall" << endl;
 		cout << "\t\t\t<2> Modify Cinema Hall space" << endl;
 		cout << "\t\t\t<3> Delete Cinema Hall" << endl;
 		cout << "\t\t\t<4> Exit" << endl;
 		cout << "\t\t\tInput your selection >>> ";
-		cin >> selection;
-
-		switch (selection)
-		{
-		case(1)://Add cinema Hall
+		getline(cin, selection);
+		//Add cinema Hall
+		if (selection == "1")
 		{
 			result = AddCinemaHall(result);
 			if (result)
@@ -317,33 +300,20 @@ void CinemaHallManagement(int option)
 				unavailable[record - 1].column[0] = 0;
 				LoadCinemaHallRecord(record);
 			}
-			break;
 		}
-		case(2)://Modify Cinema Seat
-		{
+		else if(selection=="2")//Modify Cinema Seat
 			ModifyCinemaHall(record);
-			break;
-		}
-		case(3)://Delete Cinema Hall
-		{
+		else if(selection=="3")//Delete Cinema Hall
 			DeleteCinemaHall(record);
-			break;
-		}
-		case(4)://exit
-		{
+		else if(selection=="4")//exit
 			decision = false;
-			break;
-		}
-		default://reinput
-		{
-			cout << "\t\t\tInvalid input found" << endl;
-			break;
-		}
-		}
+		else//reinput
+			cout << "\t\t\tInvalid input detected." << endl;
 	} while (decision);
 }
 void ReadCinemaHallRecord(int& record)
 {
+	int i = 0;
 	ifstream infile;
 	infile.open("seatcontrol.txt");
 	if (infile.fail())
@@ -352,7 +322,6 @@ void ReadCinemaHallRecord(int& record)
 	}
 	else
 	{
-		int i = 0;
 		while (!infile.eof())
 		{
 			infile >> unavailable[i].hall;
@@ -929,7 +898,7 @@ void AddMovie(int& record)
 			cin >> movie_hall;
 			if (movie_hall<=hallrecord||movie_hall>0)
 			{
-				MovieEndDetection(movie_time, movie_hall, movie_length, found, record);
+				MovieEndDetection(movie_time, movie_hall, movie_length, found, record,999);
 				if (found == 0)
 					checking = false;
 			}
@@ -973,14 +942,13 @@ void AddMovie(int& record)
 }
 void ModifyMovie(int& record)
 {
-	//char confirms;
-	string movie_name, movie_id, description, movie_time;
-	double movie_length;
-	int movie_hall,trace;
 	bool decision = true;
 	do {
+		string movie_name, movie_id, description, movie_time;
+		double movie_length;
+		int movie_hall, trace = 0;
 		int found = 0,selection,storage;
-		cout << "\t\t\tInput the Movie ID: ";
+		cout << "\t\t\tInput the Movie ID <E>xit: ";
 		cin >> movie_id;
 		movie_id = upper(movie_id);
 		for (int i = 0; i < record; i++)
@@ -1001,20 +969,20 @@ void ModifyMovie(int& record)
 			cout << "\t\t\t<5> Movie length" << endl;
 			cout << "\t\t\t<6> Cinema Hall of movie" << endl;
 			cout << "\t\t\t<7> Exit" << endl;
-			cout << "\t\t\tInput your selection" << endl;
+			cout << "\t\t\tInput your selection";
 			cin >> selection;
 			switch (selection)
 			{
 			case(1):
 			{
 				int check = 0;
-				cout << "\t\t\tInput new movie id: " << endl;
+				cout << "\t\t\tInput new movie id >>> ";
 				cin >> movie_id;
 				for(int i = 0; i < record; i++)
 				{
 					if (movie_id == movie[i].movie_id)
 					{
-						cout << "\t\t\tMovie ID was found inside the system" << endl;
+						cout << "\t\t\tMovie ID was found inside the system." << endl;
 						check++;
 					}
 				}
@@ -1027,7 +995,7 @@ void ModifyMovie(int& record)
 			case(2):
 			{
 				//assume that movie can have the same name !!!
-				cout << "\t\t\tInput new movie name: " << endl;
+				cout << "\t\t\tInput new movie name >>> ";
 				getline(cin, movie_name);
 				movie[storage].movie_name = movie_name;
 				break;
@@ -1035,7 +1003,7 @@ void ModifyMovie(int& record)
 			case(3):
 			{
 				//assume that description can have the same !!!
-				cout << "\t\t\tInput new movie description: " << endl;
+				cout << "\t\t\tInput new movie description >>> ";
 				getline(cin, description);
 				movie[storage].description = description;
 				break;
@@ -1043,12 +1011,13 @@ void ModifyMovie(int& record)
 			case(4):
 			{
 
-				cout << "\t\t\tInput the new start time in 24 Hours format (XXXX)>>> " << endl;
+				cout << "\t\t\tInput the new start time in 24 Hours format (XXXX)>>> ";
 				cin >> movie_time;
 				bool result = MovieStartDetection(movie_time);
 				if (result)
 				{
-					MovieEndDetection(movie_time, movie[storage].movie_hall, movie[storage].movie_length, trace, record);
+					MovieEndDetection(movie_time, movie[storage].movie_hall, movie[storage].movie_length, trace, record,storage);
+					cout << trace << endl;
 					if (trace == 0)
 					{
 						movie[storage].movie_time = movie_time;
@@ -1060,7 +1029,7 @@ void ModifyMovie(int& record)
 			{
 				cout << "\t\t\tEnter the new movie length in Hours.Minutes(X.XX) >>>";
 				cin >> movie_length;
-				MovieEndDetection(movie[storage].movie_time, movie[storage].movie_hall,movie_length, trace, record);
+				MovieEndDetection(movie[storage].movie_time, movie[storage].movie_hall,movie_length, trace, record,storage);
 				if (trace == 0)
 				{
 					movie[storage].movie_length = movie_length;
@@ -1071,7 +1040,7 @@ void ModifyMovie(int& record)
 			{
 				cout << "\t\t\tEnter the new movie hall >>>";
 				cin >> movie_hall;
-				MovieEndDetection(movie[storage].movie_time,movie_hall, movie[storage].movie_length, trace, record);
+				MovieEndDetection(movie[storage].movie_time,movie_hall, movie[storage].movie_length, trace, record,storage);
 				if (trace == 0)
 				{
 					movie[storage].movie_hall = movie_hall;
@@ -1098,9 +1067,11 @@ void ModifyMovie(int& record)
 			}
 		
 		}
+		else if(movie_id=="E")
+			decision = false;
 		else
-			cout << "\t\t\tinvalid input" << endl;
-		LoadMovieRecord(record);
+			cout << "\t\t\tinvalid input.Please input again" << endl;
+			LoadMovieRecord(record);
 	} while (decision);
 }
 void DeleteMovie(int& record) 
@@ -1247,23 +1218,30 @@ void MovieRecordIntoStruct(string id,string name,string description,string time,
 	}
 	LoadMovieRecord(record);
 }
-void MovieEndDetection(string movie_time,int movie_hall,double movie_length,int& found,int &record)
-{
+void MovieEndDetection(string movie_time, int movie_hall, double movie_length, int& found, int& record, int storage)
+{//storage is i value from modication section
 	double movie_end = stoi(movie_time) + (int(movie_length) * 100 + (movie_length - int(movie_length)) * 100);
 	movie_end = int(movie_end);
-	if (movie_end - movie_end / 100 * 100 > 60)
+	if (movie_end - movie_end / 100 * 100 > 60) {//minutes exist 60
 		movie_end = movie_end - 60 + 100;
-
+	}
 	for (int i = 0; i < record; i++)
 	{
-		if (movie_hall == movie[i].movie_hall)
-		{
+		int detection = 0,timing,hour,minutes,ending,overflow;
+		if (i == storage){
+			detection++;
+			continue;
+		}
+		else if (movie_hall == movie[i].movie_hall) {		//take other record than that movie hall(if 99)  ===
 			string time = movie[i].movie_time;					//1200
-			int timing = stoi(time);
-			int hour = int(movie_length);						//2.40=2
-			int minutes = int((movie_length - hour) * 100);			//40
-			int ending = timing + hour * 100 + minutes;			//1200+2*100+40
-			int overflow = ending - int(ending / 100 * 100);
+			timing = stoi(time);
+			detection++;
+		}
+		if(detection==1){
+			hour = int(movie_length);						//2.40=2
+			minutes = int((movie_length - hour) * 100);		//40
+			ending = timing + hour * 100 + minutes;			//1200+2*100+40
+			overflow = ending - int(ending / 100 * 100);
 			if (overflow >= 60)
 				ending = ending - 60 + 100;
 
@@ -1286,15 +1264,14 @@ void EmployeeManagement(int)
 		system("cls");
 		int record = 0,selection;
 		ReadEmployeeRecord(record);
-		cout <<"\n\n\n\t\t\t"<< string(161, char(61)) << endl;
-		cout << "\t\t\t=" << setw(15) << "Employee ID" << setw(35) << "Employee Name" << setw(45) << "Department" << setw(40) << "Position" <<setw(20)<< "Password" << setw(5) << "=" << endl;
+		cout << "\n\n\n\t\t\t" << string(161, char(61)) << endl;
+		cout << "\t\t\t=" << setw(15) << "Employee ID" << setw(35) << "Employee Name" << setw(45) << "Department" << setw(40) << "Position" << setw(20) << "Password" << setw(5) << "=" << endl;
 		cout << "\t\t\t" << string(161, char(61)) << endl;
 		for (int i = 0; i < record; i++)
 		{
-			cout << "\t\t\t=" << setw(15) << employee[i].id << setw(35) << employee[i].name << setw(45) << employee[i].department << setw(40) << employee[i].position << setw(20) << employee[i].password <<setw(5)<<"="<< endl;
+			cout << "\t\t\t=" << setw(15) << employee[i].id << setw(35) << employee[i].name << setw(45) << employee[i].department << setw(40) << employee[i].position << setw(20) << employee[i].password << setw(5) << "=" << endl;
 		}
-		cout << "\t\t\t" << string(161, char(61)) << endl;
-		cout << "\t\t\t<1> Add Employee " << endl;
+		cout << "\t\t\t" << string(161, char(61)) << endl;		cout << "\t\t\t<1> Add Employee " << endl;
 		cout << "\t\t\t<2> Modify Employee" << endl;
 		cout << "\t\t\t<3> Delete Employee" << endl;
 		cout << "\t\t\t<4> Exit" << endl;
@@ -1381,7 +1358,7 @@ void AddEmployee(int& record)
 		int password;
 		string employee_id, employee_department, employee_name, employee_position;
 		do {
-			cout << "\t\t\tInput employee id ('EW' and 3 numerial numbers)>>>";
+			cout << "\t\t\tInput employee id ('EW' and 3 numeric numbers)>>>";
 			cin >> employee_id;
 			employee_id = upper(employee_id);
 			result = EmployeeID(employee_id, record);
@@ -1396,7 +1373,7 @@ void AddEmployee(int& record)
 			cout << "\t\t\tInput employee name >>>";
 			getline(cin, employee_name);
 			employee_name = upper(employee_name);
-			cout << "\t\t\tEmployee name, "<<employee_name<<"\n\t\t\tconfirmation <Y>es >>> ";
+			cout << "\t\t\tEmployee name, "<<employee_name<<"\n\t\t\tIf confirms <Y>es >>> ";
 			cin >> cont;
 			cont = toupper(cont);
 		} while (!(cont == 'Y'));
@@ -1404,7 +1381,7 @@ void AddEmployee(int& record)
 		char conts;
 		do {
 			int number;
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < sizeof(department)/sizeof(string); i++)//display department
 			{
 				cout << "\t\t\t<"<<i+1<<"> " << department[i] << endl;
 				
@@ -1413,7 +1390,7 @@ void AddEmployee(int& record)
 			cin >> number;
 			employee_department = department[number - 1];
 			cout << "\t\t\tThis employee under deparment of " << employee_department << endl;
-			cout << "\t\t\tEmployee department confirmation <Y>es >>> ";
+			cout << "\t\t\tEmployee department confirmation <Y>es <N>o >>> ";
 			cin >> conts;
 			conts = toupper(conts);
 		} while (!(conts=='Y'));
@@ -1425,7 +1402,7 @@ void AddEmployee(int& record)
 			getline(cin,employee_position);
 			employee_position = upper(employee_position);
 			cout << "\t\t\tHer/His position is "<<employee_position<<endl;
-			cout << "\t\t\tEmployee position confirmation <Y>es >>> ";
+			cout << "\t\t\tEmployee position confirmation <Y>es <N>o >>> ";
 			cin >> resume;
 			resume = toupper(resume);
 		} while (!(resume == 'Y'));
@@ -1471,8 +1448,6 @@ void AddEmployee(int& record)
 			}
 		} while (!(confirms == 'Y' || confirms == 'N'));
 	} while (decision);
-	
-
 }
 void DeleteEmployee(int& record)
 {
@@ -1514,12 +1489,12 @@ void DeleteEmployee(int& record)
 }
 void ModifyEmployee(int& record)
 {
-	char cont;
+	bool checking = true;
 	do {
 		bool result;
 		int index, found=0,selection,number=0;
 		string id,employee_id, employee_name, employee_position;
-		cout << "\t\t\tInput the employee id to further modify >>> ";
+		cout << "\t\t\tInput the employee id to modify >>> ";
 		cin >> id;
 		id = upper(id);
 		for (int i = 0; i < record; i++)
@@ -1530,17 +1505,15 @@ void ModifyEmployee(int& record)
 				found++;
 			}
 		}
-		if (found > 0)
+		if (found == 1)
 		{
-			bool checking = true;
-			do {
-				cout << "\t\t\tEmployee id found in system " << endl;
+				cout << "\t\t\tEmployee id, "<<id<<" found in system " << endl;
 				cout << "\t\t\t<1> Employee id" << endl;
 				cout << "\t\t\t<2> Employee name" << endl;
 				cout << "\t\t\t<3> employee department" << endl;
 				cout << "\t\t\t<4> employee position" << endl;
 				cout << "\t\t\t<5> Exit" << endl;
-				cout << "\t\t\tinput your selection to modify >>> " ;
+				cout << "\t\t\tinput your selection to modify >>> ";
 				cin >> selection;
 				switch (selection)
 				{
@@ -1554,6 +1527,7 @@ void ModifyEmployee(int& record)
 						employee[index].id = employee_id;
 					else
 						cout << "\t\t\tInvalid employee id" << endl;
+					checking = false;
 					break;
 				case(2):
 				{
@@ -1561,17 +1535,20 @@ void ModifyEmployee(int& record)
 					cout << "\t\t\tInput new employee name: ";
 					getline(cin, employee_name);
 					employee_name = upper(employee_name);
-					employee_name = employee[index].name;
+					employee[index].name= employee_name;
+					checking = false;
 					break;
 				}
 				case(3):
 				{
 					for (int i = 0; i < 5; i++)
 					{
-						cout << "< " << i << " > " << department[i] << endl;
+						cout << "\t\t\t< " << i+1 << " > " << department[i] << endl;
 					}
+					cout << "\t\t\tInput the department number >>>";
 					cin >> number;
 					employee[index].department = department[number - 1];
+					checking = false;
 					break;
 				}
 				case(4):
@@ -1580,9 +1557,8 @@ void ModifyEmployee(int& record)
 					cout << "\t\t\tInput new position of employee >>> ";
 					getline(cin, employee_position);
 					employee_position = upper(employee_position);
-					cout << "Position is " << employee_position;
-					employee_position = employee[index].position;
-					break;
+					cout << "\t\t\tPosition is " << employee_position;
+					employee[index].position= employee_position;
 				}
 				}case(5):
 				{
@@ -1591,18 +1567,17 @@ void ModifyEmployee(int& record)
 				}
 				default:
 				{
-					cout << "\t\t\tInvalid input" << endl;
+					cout << "\t\t\tInvalid input detected." << endl;
 				}
 				}
-			} while (checking);
+				LoadEmployeeRecord(record);
 		}
-		LoadEmployeeRecord(record);
-		cout << "\t\t\tDo you want to continue <Y>es >>>";
-		cin >> cont;
-	} while (cont=='Y');
+		else
+			cout << "\t\t\tInvalid input detected." << endl;
+	} while (checking);
 }
 bool EmployeeID(string employee_id,int &record)
-{
+{//employee id must start with EW and end with three numeric numbers
 	int found = 0,size;
 	size = signed(employee_id.size());
 	for (int i = 0; i < record; i++)
@@ -1620,7 +1595,6 @@ bool EmployeeID(string employee_id,int &record)
 	else
 		return false;
 }
-
 void MovieDetails(int option)
 {
 	system("cls");
@@ -1636,6 +1610,7 @@ void MovieDetails(int option)
 	cout << "\t\t\t";
 	system("pause");
 }
+
 void PurchaseNow(int option)
 {
 	int selection;
@@ -1676,8 +1651,8 @@ void BookMovie(int option)
 {
 	bool decision=true,validated=true;
 	do {
-		int record = 0, result=0,time_validate=0,inner=0;
-		string keyword, movie_name,movie_time;
+		int record = 0, result=0,time_validate=0,inner=0,movie_hall[30];
+		string keyword, movie_time;
 		system("cls");
 		ReadMovieRecord(record);
 		GetSystemTime(&systemTime);
@@ -1691,32 +1666,30 @@ void BookMovie(int option)
 			cout << "\t\t\tDear customer, please input current date (refer to upper right)" << endl;
 			cout << "\t\t\tcurrent date in DD MM YYYY form >>>";
 			cin >> dd >> mm >> yyyy;
-			TimeChecking(dd, mm, yyyy, date, month, year, result);
-			if (result > 0)
+			TimeChecking(dd, mm, yyyy, date, month, year, time_validate);
+			if (time_validate > 0)
 			{
 				validated = false;
 				string currentdate = to_string(dd) + " " + to_string(mm) + " " + to_string(yyyy);
 			}
 			else
-				cout << "\t\t\tInvalid input. Please input again." << endl;
+				cout << "\t\t\tInvalid input detected." << endl;
 		} while (validated);
+		cin.ignore();
 		cout << "\t\t\tInput the keyword to search the movie <E>xit >>>";
-		cin >> keyword;
+		getline(cin,keyword);
 		keyword = upper(keyword);
 		for (int i = 0; i < record; i++)
 		{
 			if (movie[i].movie_name.find(keyword) != string::npos)//keyword checking process
 			{
 				inner++;
-				if (inner== 1)
-				{
+				if (inner== 1){
 					system("cls");
 					cout << "\n\n\n\n\t\t\t" << string(150, char(95)) << endl;
 					cout << "\t\t\t" << setw(135) <<systemTime.wDay << "/" <<systemTime.wMonth << "/" << systemTime.wYear << " " << systemTime.wHour << ":" << systemTime.wMinute << ":" << systemTime.wSecond << endl;
-
 					cout << "\t\t\t" << string(150, char(95)) << endl;
 				}
-				movie_name = movie[i].movie_name;
 				cout << "\n\t\t\tNo. " << inner << endl;
 				cout << "\t\t\tMovie Name: " << movie[i].movie_name << endl;
 				cout << "\t\t\tMovie Description: " << movie[i].description << endl;
@@ -1727,16 +1700,17 @@ void BookMovie(int option)
 		}
 		if (keyword == "E")
 			decision = false;
-		else if (result == 0)
+		else if (inner == 0)
 		{
-			cout << "\t\t\tno result found" << endl;
+			cout << "\t\t\tno result found...\n\t\t\tReturn to booking page" << endl;
+			Sleep(1000);
 			return BookMovie(0);
 		}
 		else {
 			cout << "\t\t\t" << string(150, char(95)) << endl;
 			bool confirms = true;
 			int found = 0,adult,child;
-			char booking;
+			string booking="w";
 			while (confirms)
 			{
 				cout << "\t\t\tInput the showtime of the movie <E>xit >>>";
@@ -1748,67 +1722,108 @@ void BookMovie(int option)
 				}
 				else
 				{
-					int index = 0;
+					int noMovie[10] = {}, index = 0, number = 0;
 					bool result = MovieStartDetection(movie_time);
 
 					for (int i = 0; i < record; i++)
 					{
-						if (movie_name == movie[i].movie_name && movie_time == movie[i].movie_time)
+						if (movie_time == movie[i].movie_time)
 						{
-							index = i;
+							noMovie[found] = i;
 							found++;
 						}
 					}
 					if (result&&found>0)
 					{
-						cout << "\t\t\tMovie Name: " << movie[index].movie_name << endl;
-						cout << "\t\t\tMovie Description: " << movie[index].description << endl;
-						cout << "\t\t\tMovie Time: " << movie[index].movie_time << endl;
-						cout << "\t\t\tMovie Length H.MM: " << fixed << setprecision(2) << movie[index].movie_length << endl;
-						cout << "\t\t\tMovie Hall: " << movie[index].movie_hall << endl;
-						cout << "\t\t\tAre this movie you want to book <Y>es <N>o >> >";
-						cin >> booking;
-						booking = toupper(booking);
-						if (booking == 'Y')
-						{
+						string booking;
+						do {
+							index = noMovie[number];
+							number++;
+							cout << "\t\t\tMovie Name: " << movie[index].movie_name << endl;
+							cout << "\t\t\tMovie Description: " << movie[index].description << endl;
+							cout << "\t\t\tMovie Time: " << movie[index].movie_time << endl;
+							cout << "\t\t\tMovie Length H.MM: " << fixed << setprecision(2) << movie[index].movie_length << endl;
+							cout << "\t\t\tMovie Hall: " << movie[index].movie_hall << endl;
+							cout << "\t\t\tAre this movie you want to book <Y>es <N>o >> >";
+							cin >> booking;
+							booking = upper(booking);
+							string final;
 							bool payment = true;
-							char final = 'W';
-							do {
-								int row[50];
-								int column[50];
-								CinemaSeatPrinting(index, 0);
-								cout << "\t\t\tInput the number of children you want to book for >>>";
-								cin >> child;
-								cout << "\t\t\tInput the number of adult you want to book for >>>";
-								cin >> adult;
-								for (int i = 0; i < child + adult; i++)
-								{
-									cout << "\t\t\tNo. " << i + 1 << endl;
-									cout << "\t\t\tInput the row you want >>>>";
-									cin >> row[i];
-									cout << "\t\t\tInput the colomn you want >>>>";
-									cin >> column[i];
-								}
-								cout << "Successfully booked the seats with ";
-								for (int i = 0; i < child + adult; i++)
-								{
-									cout << "Row " << row[i] <<"Column "<< column[i]<<endl;
-								}
-								while (final != 'Y' || (final != 'N' || final != 'E'))
-								{
-									cout << "Are you confirms with this booking <Y>es <N>o <E>xit >>>";
-									cin >> final;
-									final = toupper(final);
-									if (final == 'Y' || final == 'E')
+							if (booking == "Y") {
+								do {
+									int row[50] = {};
+									int column[50] = {};
+									CinemaSeatPrinting(index, 0);
+									cout << "\t\t\tInput the number of children you want to book for >>>";
+									cin >> child;
+									cout << "\t\t\tInput the number of adult you want to book for >>>";
+									cin >> adult;
+									for (int i = 0; i < child + adult; i++)
 									{
-										payment = false;
-										confirms = false;
+										cout << "\t\t\tNo. " << i + 1 << endl;
+										cout << "\t\t\tInput the row you want >>>>";
+										cin >> row[i];
+										cout << "\t\t\tInput the colomn you want >>>>";
+										cin >> column[i];
 									}
-									else if (final != 'N')
-										cout << "Invalid input" << endl;
+									cout << "Successfully booked the seats with ";
+									for (int i = 0; i < child + adult; i++)
+									{
+										cout << "Row " << row[i] << "Column " << column[i] << endl;
+									}
+									do {
+										cout << "Are you confirms with this booking <Y>es <N>o <E>xit >>>";
+										cin >> final;
+										final = upper(final);
+										if (final == "Y" || final == "E") {
+											payment = false;
+											confirms = false;
+										}
+										else if (final != "N")
+											cout << "Invalid input" << endl;
+									} while (final != "Y" || (final != "N" || final != "E"));
+								} while (payment);
+
+								if (final == "Y")
+								{
+									int nomember = 10;
+									//OpenMemberDetail(nomember);
+									string members, phone_number, index = "9999";
+									cout << "\t\t\tAre you a member of our cinema <Y>es <N>o  >>";
+									cin>> members;
+									if (members == "Y") {
+										do {
+											cout << "\t\t\tInput your phone number to record the points <E>xit >>>";
+											cin >> phone_number;
+											for (int i = 0; i < nomember; i++)
+											{
+												//if (phone_number == Member[i].Details_phone)
+												index = i;
+											}
+											if (phone_number == "E")
+												index = "9998";
+											else if (index == "9999")
+												cout << "\t\t\tInvalid input detected." << endl;
+										} while (index == "9999");
+										//PerformPayment();
+									}
+									else {
+										//PerformPayment();
+									}
 								}
-							} while (payment);
-						}
+							}
+							else if (booking == "N")
+							{
+								if (number == found)
+								{
+									cout << "\t\t\tNo other movie found." << endl;
+									decision = false;
+									break;
+								}
+							}
+							else
+								cout << "\t\t\tInvalid input detected." << endl;
+						} while (booking == "N"||booking!="Y");
 					}
 				}
 			}
@@ -1894,11 +1909,12 @@ void CinemaRefresh(int option)
 	int movie_record=0, hall_record=0;
 	while (decision)
 	{
-		cout << "\n\n\n\t\t\tCinema Refreshing terms and conditions!!!" << endl;
+		system("cls");
+		cout << "\n\n\n\t\t\tRefresh Cinema terms and conditions!!!" << endl;
 		cout << "\t\t\tOnce you confirm to refresh the cinema, the available seats and the cinema hall record of each movie will be refreshed " << endl;
 		cout << "\t\t\t to the latest updated from the cinema hall record" << endl;
 		cout << "\t\t\tThe system is not reversable after confirmation have made" << endl;
-		cout << "\t\t\tCinema Refreshing Confirmation" << endl;
+		cout << "\t\t\tRefreshing Cinema Confirmation" << endl;
 		cout << "\t\t\t if Confirms <Y>es, else <N>o  >>>";
 		getline(cin, confirms);
 		confirms = upper(confirms);
@@ -1987,7 +2003,51 @@ void Main_Menu(string Name)
 	cout << "\t\t\t" << string(121, char(61)) << "\n";
 }
 
+void ReadTextRecord(int record)
+{
+	ifstream infile;
+	infile.open("title.txt");
+	if (infile.fail())
+		cout << "unable to open the file" << endl;
+	else
+	{
+		while (!infile.eof())
+		{
+			for (int i = 0; i < 19; i++)
+			{
+				for (int j = 0; j < 7; j++)
+				{
+					getline(infile, text[i][j]);
+				}
+			}
+		}
+	}
+}
 
 
-
-
+void OpenMemberDetails(int& nomember)
+{
+	/*int i = 0;
+	ifstream Ad_memberlist;
+	Ad_memberlist.open("Admin_memberlist.txt");
+	if (Ad_memberlist.is_open())
+	{
+		while (!Ad_memberlist.eof())
+		{
+			getline(Ad_memberlist, Member[i].Details_user);
+			getline(Ad_memberlist, Member[i].Details_password);
+			getline(Ad_memberlist, Member[i].Details_name);
+			getline(Ad_memberlist, Member[i].Details_status);
+			getline(Ad_memberlist, Member[i].Details_join);
+			getline(Ad_memberlist, Member[i].Details_point);
+			getline(Ad_memberlist, Member[i].Details_phone);
+			getline(Ad_memberlist, Member[i].Details_email);
+			i++;
+			nomember = i;
+		}
+	}
+	else
+		cout << "Please contact admin for further assistance..." << endl;
+	Ad_memberlist.close();
+	*/
+}
