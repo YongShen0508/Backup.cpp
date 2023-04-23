@@ -7,9 +7,9 @@ SUZUME
 0
 0
 0
-6
-2 6 4 8 9 5
-4 5 8 7 4 5
+10
+1 2 4 5 4 5 9 8 7 6
+1 2 5 4 6 8 10 11 12 13
 A002
 JUNG_E
 In a post-apocalptic near-future, a AI lab researchers end civil war by cloning the brain of a heroic soldier
@@ -19,9 +19,9 @@ In a post-apocalptic near-future, a AI lab researchers end civil war by cloning 
 0
 0
 0
-6
-2 6 4 8 9 5
-4 5 8 7 4 5
+10
+1 2 4 5 4 5 9 8 7 6
+1 2 5 4 6 8 10 11 12 13
 A003
 ANT-MAN AND THE WASP: QUANTUMANIA
 Super-Hero partners Scott Lang and Hope Van Dyne continue their adventures as Ant-Man and the Wasp.
